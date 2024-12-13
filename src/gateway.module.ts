@@ -20,4 +20,4 @@ import { ClientProxyFactory, Transport } from '@nestjs/microservices';
     inject:[]
   }],
 })
-export class AppModule {}
+export class GatewayModule {}
