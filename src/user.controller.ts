@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { Body, Controller, HttpException, Inject, Post } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiConsumes } from '@nestjs/swagger';
 import { SignUpDto } from './dto/user.dto';
@@ -21,6 +21,9 @@ export class UserController {
         })
       ))
     )
+    if(respons?.error){
+      throw new HttpException(respons?.message,respons?.status ?? 500)
+    }
     return respons
   }
 
