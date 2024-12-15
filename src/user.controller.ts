@@ -1,4 +1,4 @@
-import { Body, Controller, HttpException, Inject, Post } from '@nestjs/common';
+import { Body, Controller, HttpException, Inject, InternalServerErrorException, Post } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiConsumes } from '@nestjs/swagger';
 import { SignUpDto } from './dto/user.dto';
@@ -8,7 +8,8 @@ import { catchError, lastValueFrom } from 'rxjs';
 @Controller('user')
 export class UserController {
   constructor(
-    @Inject("USER_SERVICE") private readonly  userClinetService:ClientProxy
+    @Inject("USER_SERVICE") private readonly  userClinetService:ClientProxy,
+    @Inject("TOKEN_SERVICE") private readonly  tokenClinetService:ClientProxy,
   ) {}
 
   @Post('signup')
@@ -24,7 +25,17 @@ export class UserController {
     if(respons?.error){
       throw new HttpException(respons?.message,respons?.status ?? 500)
     }
-    return respons
+    if(respons?.data){
+      const responsToken=await lastValueFrom(
+        this.tokenClinetService.send("create_token_user",{userId:respons?.data?.userId,email:respons?.data?.email})
+      )
+      if(responsToken?.data?.token){
+        return{
+          token:responsToken?.data?.token
+        }
+      }
+    }
+     throw new InternalServerErrorException("some service in missing")
   }
 
 

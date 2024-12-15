@@ -17,7 +17,21 @@ import { ClientProxyFactory, Transport } from '@nestjs/microservices';
         }
       })
     },
-    inject:[]
-  }],
+    inject:[],
+    
+  },
+  {  provide:"TOKEN_SERVICE",
+    useFactory(){
+      return ClientProxyFactory.create({
+        transport:Transport.TCP,
+        options:{
+          port:4002,
+          host:"0.0.0.0"
+        }
+      })
+    },
+    inject:[]}
+
+],
 })
 export class GatewayModule {}
