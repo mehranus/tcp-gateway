@@ -1,8 +1,10 @@
-import { Body, Controller, HttpException, Inject, InternalServerErrorException, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, Inject, InternalServerErrorException, Post, Req } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiConsumes } from '@nestjs/swagger';
 import { LoginDto, SignUpDto } from './dto/user.dto';
 import { catchError, lastValueFrom } from 'rxjs';
+import { Auth } from './decorator/auth.decorator';
+import { Request } from 'express';
 
 
 @Controller('user')
@@ -63,5 +65,11 @@ export class UserController {
      throw new InternalServerErrorException("some service in missing")
   }
 
+
+  @Get("check_login")
+  @Auth()
+  getUser(@Req() req:Request){
+    return req?.user
+  }
 
 }
