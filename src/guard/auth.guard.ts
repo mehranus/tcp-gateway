@@ -37,15 +37,17 @@ export class AuthGuard implements CanActivate {
   }
 
   const {data}=verifyUserRespons
- 
+
   if(!data || !data?.userId) throw new UnauthorizedException("user account not found!")
   const userRespouns=await lastValueFrom(
   this.userClinetService.send("get_user_by_id",{userId:data?.userId})
   )  
+
   if(userRespouns?.error || !userRespouns){
     throw new HttpException(userRespouns?.message,userRespouns?.status)
   }
   const {user = undefined}=userRespouns?.data
+
   if(!user) throw new UnauthorizedException("user account not found!")
    
     req.user=user
