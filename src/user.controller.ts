@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, Inject, InternalServerErrorException, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Inject, InternalServerErrorException, Post, Req } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiConsumes } from '@nestjs/swagger';
 import { LoginDto, SignUpDto } from './dto/user.dto';
@@ -70,6 +70,23 @@ export class UserController {
   @Auth()
   getUser(@Req() req:Request){
     return req?.user
+  }
+  @Get("logout")
+  @Auth()
+  async logoutUser(@Req() req:Request){
+   const {_id}=req?.user
+   const response=await lastValueFrom(
+    this.tokenClinetService.send("destroy_token",{userId:_id})
+   )
+
+   if(response?.error){
+    throw new HttpException(response?.message,response?.status ?? HttpStatus.INTERNAL_SERVER_ERROR)
+   }
+   return{
+    message:response?.message,
+    status:response?.status
+   }
+
   }
 
 }
