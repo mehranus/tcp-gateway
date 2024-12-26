@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Inject, InternalServerErrorException, Post, Req } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { ApiConsumes } from '@nestjs/swagger';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { LoginDto, SignUpDto } from './dto/user.dto';
 import { catchError, lastValueFrom } from 'rxjs';
 import { Auth } from './decorator/auth.decorator';
@@ -8,6 +8,7 @@ import { Request } from 'express';
 
 
 @Controller('user')
+@ApiTags("User")
 export class UserController {
   constructor(
     @Inject("USER_SERVICE") private readonly  userClinetService:ClientProxy,
