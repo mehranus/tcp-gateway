@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, OmitType } from "@nestjs/swagger";
 
 export class TaskDto{
   @ApiProperty()
@@ -8,3 +8,4 @@ export class TaskDto{
 
 }
 
+export class RemoveTaskDto extends OmitType(TaskDto,['content']){}

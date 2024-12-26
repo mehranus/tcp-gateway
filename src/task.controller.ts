@@ -1,11 +1,12 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Inject, InternalServerErrorException, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Inject, InternalServerErrorException, Post, Req } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { LoginDto, SignUpDto } from './dto/user.dto';
 import { catchError, lastValueFrom } from 'rxjs';
 import { Auth } from './decorator/auth.decorator';
 import { Request } from 'express';
-import { TaskDto } from './dto/task.dto';
+import { RemoveTaskDto, TaskDto } from './dto/task.dto';
+import { title } from 'process';
 
 
 @Controller('task')
@@ -44,6 +45,23 @@ export class TaskController {
     )
 
     return respons?.data ?? {data:[]}
+  }
+  @Delete('delete')
+  @Auth()
+  @ApiConsumes('application/x-www-form-urlencoded')
+   async deleteTask(@Body() removeDto:RemoveTaskDto){
+    const respons=await lastValueFrom(
+      this.taskClinetService.send("delete_task",{title:removeDto.title}).pipe((
+        catchError(err=>{
+          throw err
+        })
+    ))
+  )
+  if(respons?.error) throw new HttpException(respons?.message,respons?.status || InternalServerErrorException)
+    
+    return respons?.message
+
+  
   }
 
 
