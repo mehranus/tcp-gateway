@@ -1,12 +1,12 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Inject, InternalServerErrorException, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, Inject, InternalServerErrorException, Post, Put, Req } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { LoginDto, SignUpDto } from './dto/user.dto';
+
 import { catchError, lastValueFrom } from 'rxjs';
 import { Auth } from './decorator/auth.decorator';
 import { Request } from 'express';
-import { RemoveTaskDto, TaskDto } from './dto/task.dto';
-import { title } from 'process';
+import { RemoveTaskDto, TaskDto, updatetaskDto } from './dto/task.dto';
+
 
 
 @Controller('task')
@@ -60,6 +60,32 @@ export class TaskController {
   if(respons?.error) throw new HttpException(respons?.message,respons?.status || InternalServerErrorException)
     
     return respons?.message
+
+  
+  }
+  @Put('update')
+  @Auth()
+  @ApiConsumes('application/x-www-form-urlencoded')
+   async updateTask(@Body() updateDto:updatetaskDto,@Req() req:Request){
+  
+    const respons=await lastValueFrom(
+      this.taskClinetService.send("update_task",{
+        title:updateDto.title,
+        content:updateDto.content,
+        status:updateDto.status,
+        userId:req.user?._id}).pipe((
+        catchError(err=>{
+          throw err
+        })
+    ))
+  )
+ 
+  if(respons?.error) throw new HttpException(respons?.message,respons?.status || InternalServerErrorException)
+    
+    return {
+     message: respons?.message,
+     data: respons?.data
+    }
 
   
   }
