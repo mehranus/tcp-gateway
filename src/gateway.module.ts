@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import {  UserController } from './user.controller';
 import { GatewayService } from './gateway.service';
-import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { ClientProxyFactory, RmqOptions, Transport } from '@nestjs/microservices';
 import { TaskController } from './task.controller';
 
 @Module({
@@ -11,12 +11,13 @@ import { TaskController } from './task.controller';
     provide:"USER_SERVICE",
     useFactory(){
       return ClientProxyFactory.create({
-        transport:Transport.TCP,
+        transport:Transport.RMQ,
         options:{
-          port:4001,
-          host:"0.0.0.0"
+         urls:["amqp://localhost:5672"],
+         queue:"user-queue",
+         queueOptions:{}
         }
-      })
+       } as RmqOptions)
     },
     inject:[],
     
@@ -24,23 +25,25 @@ import { TaskController } from './task.controller';
   {  provide:"TOKEN_SERVICE",
     useFactory(){
       return ClientProxyFactory.create({
-        transport:Transport.TCP,
+        transport:Transport.RMQ,
         options:{
-          port:4002,
-          host:"0.0.0.0"
+         urls:["amqp://localhost:5672"],
+         queue:"token-queue",
+         queueOptions:{}
         }
-      })
+       } as RmqOptions)
     },
     inject:[]},
   {  provide:"TASK_SERVICE",
     useFactory(){
       return ClientProxyFactory.create({
-        transport:Transport.TCP,
+        transport:Transport.RMQ,
         options:{
-          port:4003,
-          host:"0.0.0.0"
+         urls:["amqp://localhost:5672"],
+         queue:"task-queue",
+         queueOptions:{}
         }
-      })
+       } as RmqOptions)
     },
     inject:[]}
 
