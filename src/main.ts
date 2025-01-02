@@ -17,8 +17,8 @@ async function bootstrap() {
 ).build()
 const document=SwaggerModule.createDocument(app,option)
 SwaggerModule.setup('/',app,document)
-  await app.listen(4000,()=>{
-    console.log('gateway: http://localhost:4000')
+  await app.listen(6500,()=>{
+    console.log('gateway: http://localhost:6500')
   });
   
 }
