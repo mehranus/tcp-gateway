@@ -20,5 +20,6 @@ SwaggerModule.setup('/',app,document)
   await app.listen(4000,()=>{
     console.log('gateway: http://localhost:4000')
   });
+  
 }
 bootstrap();
